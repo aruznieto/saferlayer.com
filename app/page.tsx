@@ -35,30 +35,33 @@ export default function Home() {
       canvas.height = img.height;
       ctx.drawImage(img, 0, 0);
 
-      // Set font size and style
-      const fontSize = 35; // Adjust as needed
-      ctx.font = `${fontSize}px Arial`;
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.3)'; // Transparency
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-
       // Calculate the diagonal length of the canvas
       const diagonalLength = Math.sqrt(canvas.width ** 2 + canvas.height ** 2);
+
+      // Watermark text
+      const fullWatermarkText = ` solo para uso de: "${watermarkText}" |`.toUpperCase();
+
+      // Set font size and style
+      const fontSize = Math.floor(diagonalLength/fullWatermarkText.length/0.6);
+      ctx.font = `${fontSize}px Courier New`;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.45)'; // Transparency
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
 
       // Rotate the canvas context for diagonal text
       ctx.translate(canvas.width / 2, canvas.height / 2);
       ctx.rotate(-Math.atan2(canvas.height, canvas.width));
 
-      // Calculate text width and height
-      const textWidth = ctx.measureText(watermarkText).width;
-      const textHeight = fontSize;
+      // Print wall of watermark text
+      for (let x = 0, y = -diagonalLength/2; y < diagonalLength/2; x += 5, y += fontSize) {
+          const xMod = x % fullWatermarkText.length;
+          const length = fullWatermarkText.length;
 
-      // Draw the watermark text repeatedly along the diagonal
-      for (let y = -diagonalLength / 2, row = 0; y < diagonalLength; y += textHeight, row++) {
-          const xOffset = (row % 2) * (textWidth / 2); // Stagger every other line
-          for (let x = -diagonalLength / 2 + xOffset; x < diagonalLength; x += textWidth) {
-              ctx.fillText(watermarkText, x, y);
-          }
+          // Rotate text so FOOBAR becomes RFOOBA by x characters
+          const first: string = fullWatermarkText.slice(0, length - xMod);
+          const last: string = fullWatermarkText.slice(length - xMod);
+
+          ctx.fillText(last + first, 0, y);
       }
 
       // Reset the canvas transformation
