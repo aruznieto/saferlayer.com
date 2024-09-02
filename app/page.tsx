@@ -44,6 +44,8 @@ export default function Home() {
       // Set font size and style
       const fontSize = Math.floor(diagonalLength/fullWatermarkText.length/0.6);
       ctx.font = `${fontSize}px Courier New`;
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)'; // Dark outline
+      ctx.lineWidth = 2;
       ctx.fillStyle = 'rgba(255, 255, 255, 0.45)'; // Transparency
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
@@ -61,6 +63,7 @@ export default function Home() {
           const first: string = fullWatermarkText.slice(0, length - xMod);
           const last: string = fullWatermarkText.slice(length - xMod);
 
+          ctx.strokeText(last + first, 0, y);
           ctx.fillText(last + first, 0, y);
       }
 
