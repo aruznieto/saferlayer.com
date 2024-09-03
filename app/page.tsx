@@ -117,7 +117,7 @@ export default function Home() {
                 watermarkPixels[i] = newRgb.r;
                 watermarkPixels[i + 1] = newRgb.g;
                 watermarkPixels[i + 2] = newRgb.b;
-                watermarkPixels[i + 3] = watermarkPixels[i + 3] * 0.45; // Apply transparency
+                watermarkPixels[i + 3] = watermarkPixels[i + 3] * 0.4; // Apply transparency
             }
 
             // Put the modified image data back onto the watermark canvas
