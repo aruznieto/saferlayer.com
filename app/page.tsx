@@ -99,6 +99,7 @@ export default function Home() {
             watermarkCanvas.width = canvas.width;
             watermarkCanvas.height = canvas.height;
 
+            // Make the font size so that the watermark fits whole in the diagonal of the image.
             const diagonalLength = Math.sqrt(canvas.width ** 2 + canvas.height ** 2);
             const fullWatermarkText = ` solo para uso de: "${watermarkText}" |`.toUpperCase();
             const fontSize = Math.floor(diagonalLength / fullWatermarkText.length / 0.6);
@@ -107,12 +108,12 @@ export default function Home() {
             watermarkCtx.textBaseline = 'middle';
             watermarkCtx.fillStyle = 'white';
 
+            // The watermark is rotated and centered on the canvas diagonally. This ensures
+            // that the watermark covers a large portion of the image, making it harder to remove.
             const centerX = watermarkCanvas.width / 2;
             const centerY = watermarkCanvas.height / 2;
             const rotationAngle = -Math.atan2(canvas.height, canvas.width);
 
-            // The watermark is rotated and centered on the canvas diagonally. This ensures
-            // that the watermark covers a large portion of the image, making it harder to remove.
             watermarkCtx.translate(centerX, centerY);
             watermarkCtx.rotate(rotationAngle);
 
