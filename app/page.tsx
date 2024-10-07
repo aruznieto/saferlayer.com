@@ -12,6 +12,7 @@ import {
   DialogActions,
 } from '@mui/material';
 import Pica from 'pica';
+import styles from './page.module.css';
 
 // Converts RGB color values to HSL.
 const rgbToHsl = (r: number, g: number, b: number) => {
@@ -321,14 +322,14 @@ export default function Home() {
   }, [image, watermarkText]);
 
   return (
-    <Container maxWidth="sm" style={{ marginTop: '50px', textAlign: 'center' }}>
+    <Container maxWidth="sm" className={styles.container}>
       <Typography variant="h4" gutterBottom>
         Watermark Your Document
       </Typography>
       <Button
         variant="contained"
         onClick={handleOpenUploadModal}
-        style={{ marginBottom: '20px' }}
+        className={styles.startButton}
       >
         Start
       </Button>
@@ -345,8 +346,8 @@ export default function Home() {
           <Button
             variant="contained"
             component="label"
-            style={{ marginTop: '20px' }}
             fullWidth
+            className={styles.chooseImageButton}
           >
             Choose Image
             <input type="file" hidden onChange={handleImageUpload} />
@@ -374,7 +375,7 @@ export default function Home() {
             fullWidth
             value={watermarkText}
             onChange={(e) => setWatermarkText(e.target.value)}
-            style={{ marginTop: '10px' }}
+            className={styles.textField}
           />
         </DialogContent>
         <DialogActions>
@@ -400,12 +401,12 @@ export default function Home() {
         maxWidth="sm"
       >
         <DialogTitle>Watermarked Image</DialogTitle>
-        <DialogContent style={{ textAlign: 'center' }}>
+        <DialogContent className={styles.resultContent}>
           {watermarkedImage && (
             <img
               src={watermarkedImage}
               alt="Watermarked"
-              style={{ maxWidth: '100%', marginTop: '20px' }}
+              className={styles.watermarkedImage}
             />
           )}
         </DialogContent>
