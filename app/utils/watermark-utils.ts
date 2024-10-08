@@ -1,6 +1,6 @@
 import Pica from 'pica';
-import { rgbToHsl, hslToRgb } from './colorUtils';
-import { drawRoundedRect } from './canvasUtils';
+import { rgbToHsl, hslToRgb } from './color-utils';
+import { drawRoundedRect } from './canvas-utils';
 
 // Calculates canvas dimensions and scaling factor
 export const getCanvasDimensions = (img: HTMLImageElement) => {

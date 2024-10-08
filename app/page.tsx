@@ -23,7 +23,7 @@ import {
   applyWatermarkText,
   blendWatermark,
   resizeAndExportCanvas,
-} from './utils/watermarkUtils';
+} from './utils/watermark-utils';
 
 export default function Home() {
   // State variables
