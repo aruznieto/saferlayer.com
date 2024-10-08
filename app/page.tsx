@@ -1,16 +1,7 @@
 "use client";
 
 import { useState, useCallback } from 'react';
-import {
-  Container,
-  Typography,
-  Button,
-  TextField,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from '@mui/material';
+import { Container, Typography, Button } from '@mui/material';
 import styles from './page.module.css';
 
 // Import helper functions
@@ -24,6 +15,11 @@ import {
   blendWatermark,
   resizeAndExportCanvas,
 } from './utils/watermark-utils';
+
+// Import extracted components
+import UploadImageModal from './components/UploadImageModal';
+import WatermarkInputModal from './components/WatermarkInputModal';
+import ResultModal from './components/ResultModal';
 
 export default function Home() {
   // State variables
@@ -137,97 +133,27 @@ export default function Home() {
       </Button>
 
       {/* Upload Image Modal */}
-      <Dialog
+      <UploadImageModal
         open={openUploadModal}
         onClose={handleCloseUploadModal}
-        fullWidth
-        maxWidth="xs"
-      >
-        <DialogTitle>Upload Image</DialogTitle>
-        <DialogContent>
-          <Button
-            variant="contained"
-            component="label"
-            fullWidth
-            className={styles.chooseImageButton}
-          >
-            Choose Image
-            <input type="file" hidden onChange={handleImageUpload} />
-          </Button>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseUploadModal} color="primary">
-            Cancel
-          </Button>
-        </DialogActions>
-      </Dialog>
+        handleImageUpload={handleImageUpload}
+      />
 
       {/* Watermark Input Modal */}
-      <Dialog
+      <WatermarkInputModal
         open={openWatermarkModal}
         onClose={handleCloseWatermarkModal}
-        fullWidth
-        maxWidth="xs"
-      >
-        <DialogTitle>Enter Watermark Text</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Who is the document for?"
-            variant="outlined"
-            fullWidth
-            value={watermarkText}
-            onChange={(e) => setWatermarkText(e.target.value)}
-            className={styles.textField}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseWatermarkModal} color="primary">
-            Cancel
-          </Button>
-          <Button
-            onClick={applyWatermark}
-            variant="contained"
-            color="primary"
-            disabled={!watermarkText}
-          >
-            Apply Watermark
-          </Button>
-        </DialogActions>
-      </Dialog>
+        watermarkText={watermarkText}
+        setWatermarkText={setWatermarkText}
+        applyWatermark={applyWatermark}
+      />
 
       {/* Result Modal */}
-      <Dialog
+      <ResultModal
         open={openResultModal}
         onClose={handleCloseResultModal}
-        fullWidth
-        maxWidth="sm"
-      >
-        <DialogTitle>Watermarked Image</DialogTitle>
-        <DialogContent className={styles.resultContent}>
-          {watermarkedImage && (
-            <img
-              src={watermarkedImage}
-              alt="Watermarked"
-              className={styles.watermarkedImage}
-            />
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseResultModal} color="primary">
-            Close
-          </Button>
-          {watermarkedImage && (
-            <Button
-              variant="contained"
-              href={watermarkedImage}
-              download="watermarked-document.png"
-              color="primary"
-            >
-              Download Image
-            </Button>
-          )}
-        </DialogActions>
-      </Dialog>
+        watermarkedImage={watermarkedImage}
+      />
     </Container>
   );
 }
