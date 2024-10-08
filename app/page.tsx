@@ -14,6 +14,7 @@ import {
 import Pica from 'pica';
 import styles from './page.module.css';
 
+// Utility Functions
 // Converts RGB color values to HSL.
 const rgbToHsl = (r: number, g: number, b: number) => {
   r /= 255;
@@ -115,6 +116,7 @@ const drawRoundedRect = (
 };
 
 export default function Home() {
+  // State variables
   const [image, setImage] = useState<string | null>(null);
   const [watermarkText, setWatermarkText] = useState('');
   const [watermarkedImage, setWatermarkedImage] = useState<string | null>(null);
@@ -124,6 +126,7 @@ export default function Home() {
   const [openWatermarkModal, setOpenWatermarkModal] = useState(false);
   const [openResultModal, setOpenResultModal] = useState(false);
 
+  // Modal Handlers
   const handleOpenUploadModal = () => {
     setOpenUploadModal(true);
   };
@@ -153,27 +156,25 @@ export default function Home() {
   };
 
   // Handles the image upload and transitions to the next modal
-  const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setImage(event.target?.result as string);
-        handleCloseUploadModal();
-        handleOpenWatermarkModal();
-      };
-      reader.readAsDataURL(file);
-    }
-  }, []);
+  const handleImageUpload = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          setImage(event.target?.result as string);
+          handleCloseUploadModal();
+          handleOpenWatermarkModal();
+        };
+        reader.readAsDataURL(file);
+      }
+    },
+    []
+  );
 
   // Main function to apply the watermark and add borders to the image.
   const applyWatermark = useCallback(async () => {
     if (!image) return;
-
-    // Border dimensions and corner radius settings.
-    const borderSize = 20; // Top, left, and right borders
-    const bottomBorderSize = 60; // Bottom border to accommodate text
-    const cornerRadius = 10; // Adjusted radius for more visible rounding
 
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -183,144 +184,210 @@ export default function Home() {
     img.src = image;
 
     img.onload = async () => {
-      // Resizes the image to ensure consistency, regardless of original size.
-      const minDim = 600;
-      const scaleFactor = Math.max(minDim / img.width, minDim / img.height);
+      // Step 1: Set up canvas dimensions
+      const { canvasWidth, canvasHeight, scaleFactor } = getCanvasDimensions(img);
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
 
-      // Adjust canvas size to include borders.
-      canvas.width = img.width * scaleFactor + 2 * borderSize;
-      canvas.height = img.height * scaleFactor + borderSize + bottomBorderSize;
+      // Step 2: Draw background and image
+      drawBackground(ctx, canvasWidth, canvasHeight);
+      ctx.save(); // Save the current state before clipping
+      drawClippedImage(ctx, img, scaleFactor);
+      ctx.restore(); // Restore after clipping
 
-      // Draws the white rounded rectangle as the background (border).
-      ctx.fillStyle = 'white';
-      drawRoundedRect(ctx, 0, 0, canvas.width, canvas.height, cornerRadius, true);
+      // Step 3: Add bottom text
+      drawBottomText(ctx, canvasHeight);
 
-      // Set the clipping region to the inner rounded rectangle.
-      ctx.save(); // Save the current state
-      drawRoundedRect(
-        ctx,
-        borderSize,
-        borderSize,
-        img.width * scaleFactor,
-        img.height * scaleFactor,
-        cornerRadius,
-        false // Don't fill, just create the path
-      );
-      ctx.clip(); // Clip to the path just defined
+      // Step 4: Create and apply watermark
+      const watermarkCanvas = createWatermarkCanvas(canvasWidth, canvasHeight);
+      applyWatermarkText(watermarkCanvas, canvasWidth, canvasHeight, watermarkText);
+      blendWatermark(ctx, watermarkCanvas);
 
-      // Draws the image onto the canvas, offset by border sizes.
-      ctx.drawImage(
-        img,
-        0,
-        0,
-        img.width,
-        img.height,
-        borderSize,
-        borderSize,
-        img.width * scaleFactor,
-        img.height * scaleFactor
-      );
+      // Step 5: Resize and export the canvas
+      await resizeAndExportCanvas(canvas);
 
-      ctx.restore(); // Restore to remove the clipping region
-
-      // Writes the product name and slogan onto the bottom border area.
-      ctx.font = 'bold 24px Arial';
-      ctx.fillStyle = 'black';
-      ctx.textAlign = 'left';
-      const textX = borderSize;
-      const textY = canvas.height - borderSize; // Bottom left corner
-      ctx.fillText('Traceable documents, Safer identities - SaferLayer.com', textX, textY);
-
-      // Creates a separate canvas for the watermark to manage it independently.
-      const watermarkCanvas = document.createElement('canvas');
-      const watermarkCtx = watermarkCanvas.getContext('2d');
-      if (!watermarkCtx) return;
-
-      watermarkCanvas.width = canvas.width;
-      watermarkCanvas.height = canvas.height;
-
-      // Calculates font size for the watermark to ensure it scales with image size.
-      const diagonalLength = Math.sqrt(canvas.width ** 2 + canvas.height ** 2);
-      const fullWatermarkText = ` solo para uso de: "${watermarkText}" |`.toUpperCase();
-      const fontSize = Math.floor(diagonalLength / fullWatermarkText.length / 0.6);
-      watermarkCtx.font = `${fontSize}px Courier New`;
-      watermarkCtx.textAlign = 'center';
-      watermarkCtx.textBaseline = 'middle';
-      watermarkCtx.fillStyle = 'white';
-
-      // Rotates and positions the watermark text diagonally across the image.
-      const centerX = watermarkCanvas.width / 2;
-      const centerY = watermarkCanvas.height / 2;
-      const rotationAngle = -Math.atan2(canvas.height, canvas.width);
-
-      watermarkCtx.translate(centerX, centerY);
-      watermarkCtx.rotate(rotationAngle);
-
-      // Repeats the watermark text across the diagonal.
-      for (let x = 0, y = -diagonalLength / 2; y < diagonalLength / 2; x += 5, y += fontSize) {
-        const xMod = x % fullWatermarkText.length;
-        const firstPart = fullWatermarkText.slice(0, fullWatermarkText.length - xMod);
-        const secondPart = fullWatermarkText.slice(fullWatermarkText.length - xMod);
-
-        watermarkCtx.fillText(secondPart + firstPart, 0, y);
-      }
-
-      // Resets the transformation matrix to prevent affecting other drawings.
-      watermarkCtx.setTransform(1, 0, 0, 1, 0, 0);
-
-      // Blends the watermark onto the original image by adjusting pixel data.
-      const watermarkImageData = watermarkCtx.getImageData(
-        0,
-        0,
-        watermarkCanvas.width,
-        watermarkCanvas.height
-      );
-      const originalImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const watermarkPixels = watermarkImageData.data;
-      const originalPixels = originalImageData.data;
-
-      // Adjusts the watermark color to ensure it contrasts with the background.
-      for (let i = 0; i < watermarkPixels.length; i += 4) {
-        const r = originalPixels[i];
-        const g = originalPixels[i + 1];
-        const b = originalPixels[i + 2];
-
-        const hsl = rgbToHsl(r, g, b);
-        const newH = (hsl.h + 0.5) % 1; // Uses complementary hue for contrast.
-        const newL = hsl.l > 0.5 ? 0.3 : 0.7; // Adjusts lightness to ensure visibility.
-        const newRgb = hslToRgb(newH, hsl.s, newL);
-
-        watermarkPixels[i] = newRgb.r;
-        watermarkPixels[i + 1] = newRgb.g;
-        watermarkPixels[i + 2] = newRgb.b;
-        watermarkPixels[i + 3] *= 0.4; // Applies transparency to the watermark.
-      }
-
-      // Places the adjusted watermark back onto the watermark canvas.
-      watermarkCtx.putImageData(watermarkImageData, 0, 0);
-
-      // Draws the watermark onto the main canvas.
-      ctx.drawImage(watermarkCanvas, 0, 0);
-
-      // Uses Pica library for high-quality resizing of the final image.
-      const pica = Pica();
-      const resizedCanvas = document.createElement('canvas');
-      resizedCanvas.width = canvas.width;
-      resizedCanvas.height = canvas.height;
-
-      // Resizes and converts the canvas to a blob for downloading.
-      await pica.resize(canvas, resizedCanvas);
-      const blob = await pica.toBlob(resizedCanvas, 'image/png');
-      if (blob) {
-        const url = URL.createObjectURL(blob);
-        setWatermarkedImage(url);
-        // After processing, open the result modal
-        handleCloseWatermarkModal();
-        handleOpenResultModal();
-      }
+      // Open the result modal after processing
+      handleCloseWatermarkModal();
+      handleOpenResultModal();
     };
   }, [image, watermarkText]);
 
+  // Helper Functions
+  const getCanvasDimensions = (img: HTMLImageElement) => {
+    const borderSize = 20; // Top, left, and right borders
+    const bottomBorderSize = 60; // Bottom border to accommodate text
+    const minDim = 600;
+    const scaleFactor = Math.max(minDim / img.width, minDim / img.height);
+
+    const canvasWidth = img.width * scaleFactor + 2 * borderSize;
+    const canvasHeight = img.height * scaleFactor + borderSize + bottomBorderSize;
+
+    return { canvasWidth, canvasHeight, scaleFactor };
+  };
+
+  const drawBackground = (
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number
+  ) => {
+    const cornerRadius = 10; // Adjusted radius for more visible rounding
+    ctx.fillStyle = 'white';
+    drawRoundedRect(ctx, 0, 0, width, height, cornerRadius, true);
+  };
+
+  const drawClippedImage = (
+    ctx: CanvasRenderingContext2D,
+    img: HTMLImageElement,
+    scaleFactor: number
+  ) => {
+    const borderSize = 20;
+    const cornerRadius = 10;
+
+    drawRoundedRect(
+      ctx,
+      borderSize,
+      borderSize,
+      img.width * scaleFactor,
+      img.height * scaleFactor,
+      cornerRadius,
+      false // Don't fill, just create the path
+    );
+    ctx.clip(); // Clip to the path just defined
+
+    ctx.drawImage(
+      img,
+      0,
+      0,
+      img.width,
+      img.height,
+      borderSize,
+      borderSize,
+      img.width * scaleFactor,
+      img.height * scaleFactor
+    );
+  };
+
+  const drawBottomText = (ctx: CanvasRenderingContext2D, canvasHeight: number) => {
+    const borderSize = 20;
+    ctx.font = 'bold 24px Arial';
+    ctx.fillStyle = 'black';
+    ctx.textAlign = 'left';
+    const textX = borderSize;
+    const textY = canvasHeight - borderSize; // Bottom left corner
+    ctx.fillText(
+      'Traceable documents, Safer identities - SaferLayer.com',
+      textX,
+      textY
+    );
+  };
+
+  const createWatermarkCanvas = (width: number, height: number) => {
+    const watermarkCanvas = document.createElement('canvas');
+    watermarkCanvas.width = width;
+    watermarkCanvas.height = height;
+    return watermarkCanvas;
+  };
+
+  const applyWatermarkText = (
+    watermarkCanvas: HTMLCanvasElement,
+    width: number,
+    height: number,
+    watermarkText: string
+  ) => {
+    const watermarkCtx = watermarkCanvas.getContext('2d');
+    if (!watermarkCtx) return;
+
+    // Calculate font size for the watermark
+    const diagonalLength = Math.sqrt(width ** 2 + height ** 2);
+    const fullWatermarkText = ` solo para uso de: "${watermarkText}" |`.toUpperCase();
+    const fontSize = Math.floor(diagonalLength / fullWatermarkText.length / 0.6);
+    watermarkCtx.font = `${fontSize}px Courier New`;
+    watermarkCtx.textAlign = 'center';
+    watermarkCtx.textBaseline = 'middle';
+    watermarkCtx.fillStyle = 'white';
+
+    // Position the watermark text diagonally
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const rotationAngle = -Math.atan2(height, width);
+
+    watermarkCtx.translate(centerX, centerY);
+    watermarkCtx.rotate(rotationAngle);
+
+    // Repeat the watermark text across the diagonal
+    for (
+      let x = 0, y = -diagonalLength / 2;
+      y < diagonalLength / 2;
+      x += 5, y += fontSize
+    ) {
+      const xMod = x % fullWatermarkText.length;
+      const firstPart = fullWatermarkText.slice(0, fullWatermarkText.length - xMod);
+      const secondPart = fullWatermarkText.slice(fullWatermarkText.length - xMod);
+
+      watermarkCtx.fillText(secondPart + firstPart, 0, y);
+    }
+
+    // Reset the transformation matrix
+    watermarkCtx.setTransform(1, 0, 0, 1, 0, 0);
+  };
+
+  const blendWatermark = (
+    ctx: CanvasRenderingContext2D,
+    watermarkCanvas: HTMLCanvasElement
+  ) => {
+    const width = watermarkCanvas.width;
+    const height = watermarkCanvas.height;
+    const watermarkCtx = watermarkCanvas.getContext('2d');
+    if (!watermarkCtx) return;
+
+    const watermarkImageData = watermarkCtx.getImageData(0, 0, width, height);
+    const originalImageData = ctx.getImageData(0, 0, width, height);
+    const watermarkPixels = watermarkImageData.data;
+    const originalPixels = originalImageData.data;
+
+    // Adjust the watermark color for contrast
+    for (let i = 0; i < watermarkPixels.length; i += 4) {
+      const r = originalPixels[i];
+      const g = originalPixels[i + 1];
+      const b = originalPixels[i + 2];
+
+      const hsl = rgbToHsl(r, g, b);
+      const newH = (hsl.h + 0.5) % 1; // Complementary hue
+      const newL = hsl.l > 0.5 ? 0.3 : 0.7; // Adjust lightness
+      const newRgb = hslToRgb(newH, hsl.s, newL);
+
+      watermarkPixels[i] = newRgb.r;
+      watermarkPixels[i + 1] = newRgb.g;
+      watermarkPixels[i + 2] = newRgb.b;
+      watermarkPixels[i + 3] *= 0.4; // Apply transparency
+    }
+
+    // Place the adjusted watermark back onto the canvas
+    watermarkCtx.putImageData(watermarkImageData, 0, 0);
+
+    // Draw the watermark onto the main canvas
+    ctx.drawImage(watermarkCanvas, 0, 0);
+  };
+
+  const resizeAndExportCanvas = async (canvas: HTMLCanvasElement) => {
+    // Uses Pica library for high-quality resizing
+    const pica = Pica();
+    const resizedCanvas = document.createElement('canvas');
+    resizedCanvas.width = canvas.width;
+    resizedCanvas.height = canvas.height;
+
+    // Resize the canvas
+    await pica.resize(canvas, resizedCanvas);
+
+    // Convert resized canvas to a Blob
+    const blob = await pica.toBlob(resizedCanvas, 'image/png');
+    if (blob) {
+      const url = URL.createObjectURL(blob);
+      setWatermarkedImage(url);
+    }
+  };
+
+  // JSX Return
   return (
     <Container maxWidth="sm" className={styles.container}>
       <Typography variant="h4" gutterBottom>
