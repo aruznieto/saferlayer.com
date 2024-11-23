@@ -1,0 +1,73 @@
+
+.gradient(@start, @end) {
+  /* can be treated like a fallback */
+  background-color: @start;
+  /* will be "on top", if browser supports it */
+  background-image: linear-gradient(@start, @end);
+  /* these will reset other properties, like background-position, but it does know what you mean */
+  background: @start;
+  background: linear-gradient(@start, @end);
+}
+
+.gradient-diagonal(@topright, @bottomleft){
+  /* can be treated like a fallback */
+  background-color: @topright;
+  /* will be "on top", if browser supports it */
+  background-image: linear-gradient(@topright, @bottomleft);
+  /* these will reset other properties, like background-position, but it does know what you mean */
+  background: @topright;
+  background: linear-gradient(45deg, @topright 0%, @bottomleft 100%);
+}
+
+.btn-border(@start, @end) {
+  border-color: @start @start darken(@end, 30%);
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+}
+
+
+.text-shadow (@col) when (iscolor(@col)) {
+  text-shadow: 0px 0px 5px @col;
+}
+
+.text-shadow(@val) when (iskeyword(@val)) {
+  text-shadow: @val;
+}
+
+.opacity (@percent) {
+  opacity: @percent / 100;
+  filter: ~"alpha(opacity=@{percent})";
+}
+
+.box-shadow (@shadow) {
+  -webkit-box-shadow: @shadow;
+     -moz-box-shadow: @shadow;
+          box-shadow: @shadow;
+}
+
+.transition(@props) {
+  -webkit-transition: @props;
+     -moz-transition: @props;
+      -ms-transition: @props;
+       -o-transition: @props;
+          transition: @props;
+}
+
+.transform(@transformation){
+  -webkit-transform: @transformation;
+     -moz-transform: @transformation;
+      -ms-transform: @transformation;
+       -o-transform: @transformation;
+          transform: @transformation;
+}
+
+
+
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
