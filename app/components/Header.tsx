@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import saferlayerLogo from '../assets/images/saferlayer-logo.svg';
 
 const Header: React.FC = () => {
   return (
@@ -8,10 +9,10 @@ const Header: React.FC = () => {
       <Link href="/">
         <Image
           className="header__logo"
-          src="/img/saferlayer-logo.svg"
+          src={saferlayerLogo}
           alt="Saferlayer Logo"
-          width={150} // Set appropriate width
-          height={50} // Set appropriate height
+          width={150}
+          height={50}
         />
       </Link>
       <ul className="header__lang-selection">
