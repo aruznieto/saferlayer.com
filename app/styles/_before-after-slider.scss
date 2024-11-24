@@ -1,7 +1,15 @@
-.center() {
+@mixin center {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+@mixin arrow-helper {
+  content: '';
+  padding: 3px;
+  display: inline-block;
+  border: solid #5D5D5D;
+  border-width: 0 2px 2px 0;
 }
 
 .before-after-slider {
@@ -9,6 +17,7 @@
   width: 454px;
   height: 286px;
   max-width: 100%;
+  
   .img {
     position: absolute;
     top: 0;
@@ -17,14 +26,14 @@
     height: 100%;
     background-size: 454px 100%;
     border-radius: 21px;
-    // box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
   }
+  
   .background-img {
-    background-image: url('../img/id-spain-watermark.png');
-
+    background-image: url('../assets/images/id-spain-watermark.png');
   }
+  
   .foreground-img {
-    background-image: url('../img/id-spain.png');
+    background-image: url('../assets/images/id-spain.png');
     width: 50%;
   }
 
@@ -38,10 +47,12 @@
     outline: none;
     margin: 0;
     transition: all .2s;
-    .center;
+    @include center;
+    
     &:hover {
       background: rgba(#f2f2f2, 0);
     }
+    
     &::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
@@ -50,6 +61,7 @@
       background: white;
       cursor: pointer;
     }
+    
     &::-moz-range-thumb {
       width: 6px;
       height: 286px;
@@ -58,35 +70,25 @@
     }
   }
 
-
-  .arrow-helper() {
-    content: '';
-    padding: 3px;
-    display: inline-block;
-    border: solid #5D5D5D;
-    border-width: 0 2px 2px 0;
-  }
-
   .slider-button {
-    @size: 30px;
+    $size: 30px;
     pointer-events: none;
     position: absolute;
-    width: @size;
-    height: @size;
+    width: $size;
+    height: $size;
     border-radius: 50%;
     background-color: white;
     left: calc(50% - 18px);
     top: calc(50% - 18px);
-    .center;
-
+    @include center;
 
     &:after {
-      .arrow-helper();
+      @include arrow-helper;
       transform: rotate(-45deg);
     }
     &:before {
-      .arrow-helper();
+      @include arrow-helper;
       transform: rotate(135deg);
     }
   }
-}
+} 
