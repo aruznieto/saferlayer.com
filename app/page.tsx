@@ -57,17 +57,6 @@ const HomePage: React.FC = () => {
                     sizes="16x16"
                     href="/favicon-16x16.png"
                 />
-                {/* Stylesheet */}
-                {/* If you have a global stylesheet, you can import it here or in _app.tsx */}
-                {/* <link rel="stylesheet" type="text/css" href="/styles/styles.css" /> */}
-                {/* Google Fonts Preconnect */}
-                <link rel="preconnect" href="https://fonts.googleapis.com" />
-                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-                {/* Google Fonts */}
-                <link
-                    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Instrument+Serif:ital@0;1&display=swap"
-                    rel="stylesheet"
-                />
                 {/* Open Graph Meta Tags */}
                 <meta property="og:title" content="Saferlayer" />
                 <meta property="og:type" content="website" />

@@ -1,7 +1,7 @@
 $v-unit: 40px;
 
-$sans-serif-font: 'DM Sans', sans-serif;
-$serif-font: 'Instrument Serif', serif;
+$sans-serif-font: var(--font-dm-sans), sans-serif;
+$serif-font: var(--font-instrument-serif), serif;
 
 $color-black: #221E1D;
 $color-brand: #E57B83;

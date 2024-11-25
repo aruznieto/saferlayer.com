@@ -87,6 +87,7 @@
   background-color: $color-salmon;
   background-image: radial-gradient($color-salmon-dark 0.5px, $color-salmon 0.5px);
   background-size: 10px 10px;
+  position: relative;
   @extend .containing-block;
   padding-bottom: 240px;
   margin-bottom: 120px;
