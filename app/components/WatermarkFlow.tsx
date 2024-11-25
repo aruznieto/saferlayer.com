@@ -1,14 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Dialog } from '@mui/material';
 
 interface WatermarkFlowProps {
     open: boolean;
     onClose: () => void;
+    watermarkText: string;
+    setWatermarkText: React.Dispatch<React.SetStateAction<string>>;
+    applyWatermark: () => void;
 }
 
-const WatermarkFlow: React.FC<WatermarkFlowProps> = ({ open, onClose }) => {
-    const [watermarkText, setWatermarkText] = useState('');
-
+const WatermarkFlow: React.FC<WatermarkFlowProps> = ({
+    open,
+    onClose,
+    watermarkText,
+    setWatermarkText,
+    applyWatermark,
+}) => {
     return (
         <Dialog
             open={open}
@@ -44,15 +51,10 @@ const WatermarkFlow: React.FC<WatermarkFlowProps> = ({ open, onClose }) => {
                         value={watermarkText}
                         onChange={(e) => setWatermarkText(e.target.value)}
                         rows={4}
-                        cols={0}
                     />
-                    <a
-                        href="#"
-                        className="cta cta--primary"
-                        onClick={() => {/* Handle continue */ }}
-                    >
+                    <button className="cta cta--primary" onClick={applyWatermark}>
                         Continue
-                    </a>
+                    </button>
 
                     <p className="watermark-flow__tip">
                         <strong>Tip:</strong>
