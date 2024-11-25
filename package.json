@@ -18,7 +18,6 @@
     "react-dom": "^18"
   },
   "devDependencies": {
-    "@next/font": "^14.2.15",
     "@types/node": "22.7.4",
     "@types/pica": "^9.0.4",
     "@types/react": "^18",

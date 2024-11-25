@@ -1,10 +1,13 @@
 // components/HeroHeader.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import Header from './Header';
-import ImageSlider from './ImageSlider.tsx';
+import ImageSlider from './ImageSlider';
+import WatermarkFlow from './WatermarkFlow';
 import Link from 'next/link';
 
 const HeroHeader: React.FC = () => {
+  const [isWatermarkFlowOpen, setIsWatermarkFlowOpen] = useState(false);
+
   return (
     <div className="hero-header" id="dropzone">
       <div className="header__stripe">
@@ -21,7 +24,10 @@ const HeroHeader: React.FC = () => {
           <Link href="/watermark-flow-1" className="cta cta--primary cta--takephoto">
             Take a photo
           </Link>
-          <Link href="/watermark-flow-1" className="cta cta--secondary">
+          <Link href="#" className="cta cta--secondary" onClick={(e) => {
+            e.preventDefault(); // Prevent navigation since we're using onClick
+            setIsWatermarkFlowOpen(true);
+          }}>
             Select an image
           </Link>
           <div className="drag-n-drop-label">
@@ -33,6 +39,8 @@ const HeroHeader: React.FC = () => {
           <ImageSlider />
         </div>
       </div>
+
+      <WatermarkFlow open={isWatermarkFlowOpen} onClose={() => setIsWatermarkFlowOpen(false)} />
     </div>
   );
 };
