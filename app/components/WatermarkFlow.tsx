@@ -52,9 +52,9 @@ const WatermarkFlow: React.FC<WatermarkFlowProps> = ({
                         onChange={(e) => setWatermarkText(e.target.value)}
                         rows={4}
                     />
-                    <button className="cta cta--primary" onClick={applyWatermark}>
+                    <a href="#" className="cta cta--primary" onClick={applyWatermark}>
                         Continue
-                    </button>
+                    </a>
 
                     <p className="watermark-flow__tip">
                         <strong>Tip:</strong>
