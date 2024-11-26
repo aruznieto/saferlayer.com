@@ -12,7 +12,6 @@ const Header: React.FC = () => {
           src={saferlayerLogo}
           alt="Saferlayer Logo"
           width={150}
-          height={50}
         />
       </Link>
       <ul className="header__lang-selection">
