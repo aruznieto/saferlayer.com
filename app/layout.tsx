@@ -1,4 +1,4 @@
-import './styles/styles.scss';
+import './styles/styles.css';
 import { DM_Sans, Instrument_Serif } from 'next/font/google';
 
 // Configure DM Sans

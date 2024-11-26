@@ -26,73 +26,85 @@
 }
 
 .header__back-btn {
-  color: $color-brand;
+  color: var(--color-brand);
   font-weight: 500;
-  svg {
-    transition: transform 0.3s ease;
-    height: 20px;
-    position: relative;
-    top: 4px;
-    path {
-      fill: $color-brand;
-    }
-  }
-  &:hover {
-    svg {
-      animation: shake 0.6s ease-in-out;
-    }
-  }
+}
+
+.header__back-btn svg {
+  transition: transform 0.3s ease;
+  height: 20px;
+  position: relative;
+  top: 4px;
+}
+
+.header__back-btn svg path {
+  fill: var(--color-brand);
+}
+
+.header__back-btn:hover svg {
+  animation: shake 0.6s ease-in-out;
 }
 
 .header__lang-selection {
   float: right;
-  li {
-    float: left;
-    margin-left: 4px;
-    a {
-      display: inline-block;
-      padding: 4px 4px;
-      color: $color-brand;
-      font-weight: 500;
-      border-bottom: 2px solid transparent;
-      text-shadow: 0px 0px 4px $color-salmon;
-      &.selected {
-        border-color: $color-brand;
-        &:hover {
-          border-color: $color-brand;
-        }
-      }
-      &:hover {
-        border-color: $color-salmon-dark;
-      }
-    }
-  }
+}
+
+.header__lang-selection li {
+  float: left;
+  margin-left: 4px;
+}
+
+.header__lang-selection li a {
+  display: inline-block;
+  padding: 4px 4px;
+  color: var(--color-brand);
+  font-weight: 500;
+  border-bottom: 2px solid transparent;
+  text-shadow: 0px 0px 4px var(--color-salmon);
+}
+
+.header__lang-selection li a.selected {
+  border-color: var(--color-brand);
+}
+
+.header__lang-selection li a.selected:hover {
+  border-color: var(--color-brand);
+}
+
+.header__lang-selection li a:hover {
+  border-color: var(--color-salmon-dark);
 }
 
 .header__stripe {
   text-align: center;
   padding: 8px;
   color: #fff;
-  background: $color-brand;
-  svg {
-    display: inline-block;
-    vertical-align: text-bottom;
-    margin-right: 4px;
-    path {
-      fill: #fff;
-    }
-  }
+  background: var(--color-brand);
+}
+
+.header__stripe svg {
+  display: inline-block;
+  vertical-align: text-bottom;
+  margin-right: 4px;
+}
+
+.header__stripe svg path {
+  fill: #fff;
 }
 
 .hero-header {
-  background-color: $color-salmon;
-  background-image: radial-gradient($color-salmon-dark 0.5px, $color-salmon 0.5px);
+  background-color: var(--color-salmon);
+  background-image: radial-gradient(var(--color-salmon-dark) 0.5px, var(--color-salmon) 0.5px);
   background-size: 10px 10px;
   position: relative;
-  @extend .containing-block;
   padding-bottom: 240px;
   margin-bottom: 120px;
-  @extend .clearfix;
+}
+
+.hero-header::after {
+  content: "";
+  display: table;
+  clear: both;
 }
 
 @media (min-width: 1200px) {
@@ -109,9 +121,9 @@
 .hero-header__h1 {
   font-size: 2rem;
   line-height: 1.2;
-  margin-bottom: .5em;
-  text-shadow: 0px 0px 5px $color-salmon;
-  @include transition(all .5s linear);
+  margin-bottom: 0.5em;
+  text-shadow: 0px 0px 5px var(--color-salmon);
+  transition: all 0.5s linear;
   position: relative;
 }
 
@@ -124,19 +136,21 @@
 
 .hero-header__disclaimer {
   margin-top: 24px;
-  color: $color-brand;
+  color: var(--color-brand);
   font-weight: 500;
   line-height: 24px;
   margin-bottom: 40px;
-  text-shadow: 0px 0px 5px $color-salmon;
-  svg {
-    display: inline-block;
-    vertical-align: text-bottom;
-    margin-right: 4px;
-    path {
-      fill: $color-brand;
-    }
-  }
+  text-shadow: 0px 0px 5px var(--color-salmon);
+}
+
+.hero-header__disclaimer svg {
+  display: inline-block;
+  vertical-align: text-bottom;
+  margin-right: 4px;
+}
+
+.hero-header__disclaimer svg path {
+  fill: var(--color-brand);
 }
 
 .cta {
@@ -148,36 +162,38 @@
   border-radius: 4px;
   margin-bottom: 16px;
   max-width: 454px;
-  @include transition(all .5s ease-out);
+  transition: all 0.5s ease-out;
 }
 
 .cta--primary {
-  background-color: $color-blue;
+  background-color: var(--color-blue);
   color: #fff;
-  border: 2px solid $color-blue;
-  &:hover {
-    background-color: $color-blue-dark;
-    border-color: $color-blue-dark;
-  }
+  border: 2px solid var(--color-blue);
+}
+
+.cta--primary:hover {
+  background-color: var(--color-blue-dark);
+  border-color: var(--color-blue-dark);
 }
 
 .cta--secondary {
   background: #fff;
-  color: $color-blue;
-  border: 2px solid $color-blue;
-  &:hover {
-    background-color: $color-blue;
-    color: #fff;
-  }
+  color: var(--color-blue);
+  border: 2px solid var(--color-blue);
+}
+
+.cta--secondary:hover {
+  background-color: var(--color-blue);
+  color: #fff;
 }
 
 .noselect {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+     -khtml-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
 }
 
 .wrapper {
@@ -218,10 +234,11 @@
 }
 
 .cta--link {
-  color: $color-blue;
-  &:hover {
-    color: $color-blue-dark;
-  }
+  color: var(--color-blue);
+}
+
+.cta--link:hover {
+  color: var(--color-blue-dark);
 }
 
 .cta--takephoto {
@@ -243,13 +260,13 @@
 
 .footer {
   padding: 2em 0;
-  color: $color-brand;
-  
-  a {
-    color: $color-brand;
-    display: inline-block;
-    border-bottom: 1px $color-brand dashed;
-  }
+  color: var(--color-brand);
+}
+
+.footer a {
+  color: var(--color-brand);
+  display: inline-block;
+  border-bottom: 1px dashed var(--color-brand);
 }
 
 .watermark-flow {
@@ -277,16 +294,17 @@
 }
 
 .watermark-flow__tip {
-  color: $color-brand;
+  color: var(--color-brand);
 }
 
 .watermark-flow__icon {
   height: 48px;
-  path {
-    fill: $color-brand;
-  }
+}
+
+.watermark-flow__icon path {
+  fill: var(--color-brand);
 }
 
 .watermark-flow__doc {
   margin-bottom: 2em;
-} 
+}

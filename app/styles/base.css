@@ -1,0 +1,46 @@
+/* Apply a natural box layout model to all elements */
+* {
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+/* Elements never display larger than their containers */
+img,
+embed,
+object,
+video,
+iframe {
+  max-width: 100%;
+}
+
+html, html a {
+  -webkit-font-smoothing: antialiased;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
+}
+
+body {
+  font: 400 16px/1.2em var(--sans-serif-font);
+  color: var(--color-black);
+  background: #fff;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: 100%;
+  font-weight: normal;
+  margin: 0;
+  font-family: var(--serif-font);
+  line-height: 1.2;
+}
+
+ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+}

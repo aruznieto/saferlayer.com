@@ -48,8 +48,9 @@ template,
 
 a {
   background-color: transparent;
-  &:active,
-  &:hover {
-    outline-width: 0;
-  }
+}
+
+a:active,
+a:hover {
+  outline-width: 0;
 }

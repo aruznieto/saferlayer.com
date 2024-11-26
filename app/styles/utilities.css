@@ -1,0 +1,14 @@
+.clearfix::before,
+.clearfix::after {
+  content: "";
+  display: table;
+  line-height: 0;
+}
+
+.clearfix::after {
+  clear: both;
+}
+
+.containing-block {
+  position: relative;
+}

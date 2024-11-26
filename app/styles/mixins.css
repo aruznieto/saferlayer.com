@@ -1,0 +1,20 @@
+/* Utility class for noselect */
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+     -khtml-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+}
+
+/* Utility classes for common transitions and transforms */
+.transition-all {
+  transition: all 0.5s ease-out;
+}
+
+.transform-shake {
+  animation: shake 0.6s ease-in-out;
+}
+
+/* Additional utility classes can be added as needed */
