@@ -12,6 +12,32 @@ const ResultModal: React.FC<ResultModalProps> = ({
   onClose,
   watermarkedImage,
 }) => {
+
+  // Check if the Web Share API with file support is available
+  const isShareSupported = typeof navigator !== 'undefined' &&
+    navigator.canShare &&
+    navigator.canShare({ files: [new File([], '')] });
+
+  const handleShare = () => {
+    if (watermarkedImage) {
+      fetch(watermarkedImage)
+        .then(response => response.blob())
+        .then(blob => {
+          const file = new File([blob], 'watermarked_document.png', { type: blob.type });
+
+          navigator.share({
+            files: [file],
+            title: 'Watermarked Document',
+            text: 'Check out this watermarked document.',
+          })
+          .catch(error => console.error('Error sharing:', error));
+        })
+        .catch(error => console.error('Error fetching image:', error));
+    } else {
+      console.error('No document available to share.');
+    }
+  };
+
   return (
     <Dialog
       open={open}
@@ -54,11 +80,16 @@ const ResultModal: React.FC<ResultModalProps> = ({
           >
             Download
           </a>
-          <a className="cta cta--secondary" onClick={() => {
-            // Implement share functionality if needed
-          }}>
-            Share document
-          </a>
+          {/* Conditionally render the Share button or an informative message */}
+          {isShareSupported ? (
+            <a className="cta cta--secondary" onClick={handleShare}>
+              Share document
+            </a>
+          ) : (
+            <p className="cta cta--info">
+              To share this document, please download it and attach it manually.
+            </p>
+          )}
           <a className="cta cta--link" onClick={onClose}>
             Watermark another document
           </a>
