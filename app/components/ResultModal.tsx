@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dialog } from '@mui/material';
+import Image from 'next/image';
 
 interface ResultModalProps {
   open: boolean;
@@ -67,10 +68,13 @@ const ResultModal: React.FC<ResultModalProps> = ({
             Your document is ready to be shared more securely!
           </h2>
           {watermarkedImage && (
-            <img
+            <Image
               className="watermark-flow__doc"
               src={watermarkedImage}
               alt="Your document"
+              width={500}
+              height={500}
+              style={{ width: 'auto', height: 'auto' }}
             />
           )}
           <a

@@ -111,7 +111,7 @@ const HeroHeader: React.FC = () => {
   return (
     <div className="hero-header" id="dropzone">
       <div className="header__stripe">
-        We don't store your documents–Saferlayer runs locally in your browser
+        We don&apos;t store your documents–Saferlayer runs locally in your browser
       </div>
 
       <div className="wrapper">

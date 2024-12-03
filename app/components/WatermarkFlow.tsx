@@ -58,7 +58,7 @@ const WatermarkFlow: React.FC<WatermarkFlowProps> = ({
 
                     <p className="watermark-flow__tip">
                         <strong>Tip:</strong>
-                        Use a unique text each time you share your document. For example: "Valid only for solvency assessment by Phil Dunphy Real Estate."
+                        Use a unique text each time you share your document. For example: &quot;Valid only for solvency assessment by Phil Dunphy Real Estate.&quot;
                     </p>
                 </div>
             </div>
