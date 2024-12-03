@@ -5,9 +5,9 @@ const fs = require('fs');
 const path = require('path');
 
 // Utility to run commands
-const run = (command: string): void => {
+const run = (command: string, options: { cwd?: string } = {}): void => {
   try {
-    execSync(command, { stdio: 'inherit' });
+    execSync(command, { stdio: 'inherit', ...options });
   } catch (error) {
     console.error(`Failed to execute ${command}`);
     process.exit(1);
@@ -19,6 +19,12 @@ async function deploy(): Promise<void> {
   console.log('🚀 Starting deployment process...');
 
   const outDir = path.join(process.cwd(), 'out');
+  
+  // Clean and reinitialize the submodule
+  console.log('📦 Reinitializing submodule...');
+  run('rm -rf out');
+  run('git submodule update --init');
+  run('git checkout main', { cwd: outDir });
   
   // Clean out directory except .git
   if (fs.existsSync(outDir)) {
@@ -35,32 +41,28 @@ async function deploy(): Promise<void> {
   console.log('🏗️  Building project...');
   run('npm run build');
 
-  // Navigate to out directory and commit changes
+  // Commit and push changes in the submodule
   console.log('📦 Committing changes...');
-  process.chdir(outDir);
-  
   try {
-    // Initialize if needed (in case it's empty)
-    if (!fs.existsSync(path.join(outDir, '.git'))) {
-      run('git init');
-      run('git remote add origin git@github.com:bytelantic/saferlayer.com.git');
-    }
-
-    // Add all files
-    run('git add -A');
+    run('git add -A', { cwd: outDir });
     
-    // Commit (will fail if no changes, that's ok)
     try {
-      // Let's also add the date and time of the update
       const date = new Date().toISOString();
-      run(`git commit -m "Update site at ${date}"`);
+      run(`git commit -m "Update site at ${date}"`, { cwd: outDir });
+      console.log('🚀 Pushing to main...');
+      run('git push origin main', { cwd: outDir });
     } catch (error) {
-      console.log('No changes to commit');
+      console.log('No changes to commit in the submodule');
     }
 
-    // Push to main
-    console.log('🚀 Pushing to main...');
-    run('git push -f origin main');
+    // Update the submodule reference in the main repository
+    run('git add out');
+    try {
+      run('git commit -m "chore: update deployment submodule reference"');
+      run('git push');
+    } catch (error) {
+      console.log('No need to update submodule reference');
+    }
     
     console.log('✅ Deployment successful!');
   } catch (error) {
