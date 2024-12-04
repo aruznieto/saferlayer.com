@@ -2,12 +2,13 @@
   "name": "watermark-id",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "deploy": "ts-node scripts/deploy.ts"
+    "deploy": "node --loader ts-node/esm scripts/deploy.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
