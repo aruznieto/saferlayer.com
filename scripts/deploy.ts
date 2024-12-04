@@ -23,23 +23,33 @@ async function deploy(): Promise<void> {
   run('git submodule update --init');
   process.chdir('out');
   run('git checkout main');
-  process.chdir('..');
-
-  // Clean the output directory while preserving the .git directory
-  console.log('🗑️  Cleaning output directory...');
-  const outDir = path.join(process.cwd(), 'out');
-  const items = fs.readdirSync(outDir);
+  
+  // Clean everything except .git
+  console.log('🗑️  Cleaning directory...');
+  const items = fs.readdirSync('.');
   for (const item of items) {
-    const itemPath = path.join(outDir, item);
-    // Skip the .git directory completely
     if (item === '.git') continue;
-    // Remove everything else
-    fs.rmSync(itemPath, { recursive: true, force: true });
+    fs.rmSync(item, { recursive: true, force: true });
   }
+
+  // Go back to root to build
+  process.chdir('..');
 
   // Build the project
   console.log('🏗️  Building project...');
   run('npm run build');
+
+  // Move contents of out directory to deployment repo
+  console.log('📦 Moving build files...');
+  const buildDir = path.join(process.cwd(), 'out');
+  const tempDir = path.join(process.cwd(), 'temp_build');
+  fs.renameSync(buildDir, tempDir);
+  fs.mkdirSync(buildDir);
+  const builtItems = fs.readdirSync(tempDir);
+  for (const item of builtItems) {
+    fs.renameSync(path.join(tempDir, item), path.join(buildDir, item));
+  }
+  fs.rmdirSync(tempDir);
 
   // Get formatted date for commit messages
   const now = new Date();
@@ -54,9 +64,9 @@ async function deploy(): Promise<void> {
     timeZone: 'UTC'
   });
 
-  // Commit and push the changes in the submodule
+  // Commit and push the changes
   console.log('📦 Committing changes...');
-  process.chdir(outDir);
+  process.chdir('out');
   run('git add .');
   
   try {
