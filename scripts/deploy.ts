@@ -5,9 +5,9 @@ const fs = require('fs');
 const path = require('path');
 
 // Utility to run commands
-const run = (command: string, options: { cwd?: string } = {}): void => {
+const run = (command: string): void => {
   try {
-    execSync(command, { stdio: 'inherit', ...options });
+    execSync(command, { stdio: 'inherit' });
   } catch (error) {
     console.error(`Failed to execute ${command}`);
     process.exit(1);
@@ -18,58 +18,65 @@ const run = (command: string, options: { cwd?: string } = {}): void => {
 async function deploy(): Promise<void> {
   console.log('🚀 Starting deployment process...');
 
-  const outDir = path.join(process.cwd(), 'out');
-  
-  // Clean and reinitialize the submodule
-  console.log('📦 Reinitializing submodule...');
-  run('rm -rf out');
+  // Ensure submodule is initialized and on main branch
+  console.log('📦 Preparing submodule...');
   run('git submodule update --init');
-  run('git checkout main', { cwd: outDir });
-  
-  // Clean out directory except .git
-  if (fs.existsSync(outDir)) {
-    console.log('🗑️  Cleaning out directory...');
-    const items = fs.readdirSync(outDir);
-    for (const item of items) {
-      if (item !== '.git') {
-        fs.rmSync(path.join(outDir, item), { recursive: true, force: true });
-      }
-    }
+  process.chdir('out');
+  run('git checkout main');
+  process.chdir('..');
+
+  // Clean the output directory while preserving the .git directory
+  console.log('🗑️  Cleaning output directory...');
+  const outDir = path.join(process.cwd(), 'out');
+  const items = fs.readdirSync(outDir);
+  for (const item of items) {
+    const itemPath = path.join(outDir, item);
+    // Skip the .git directory completely
+    if (item === '.git') continue;
+    // Remove everything else
+    fs.rmSync(itemPath, { recursive: true, force: true });
   }
 
   // Build the project
   console.log('🏗️  Building project...');
   run('npm run build');
 
-  // Commit and push changes in the submodule
-  console.log('📦 Committing changes...');
-  try {
-    run('git add -A', { cwd: outDir });
-    
-    try {
-      const date = new Date().toISOString();
-      run(`git commit -m "Update site at ${date}"`, { cwd: outDir });
-      console.log('🚀 Pushing to main...');
-      run('git push origin main', { cwd: outDir });
-    } catch (error) {
-      console.log('No changes to commit in the submodule');
-    }
+  // Get formatted date for commit messages
+  const now = new Date();
+  const timestamp = now.toLocaleString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+    timeZone: 'UTC'
+  });
 
-    // Update the submodule reference in the main repository
-    run('git add out');
-    try {
-      run('git commit -m "chore: update deployment submodule reference"');
-      run('git push');
-    } catch (error) {
-      console.log('No need to update submodule reference');
-    }
-    
-    console.log('✅ Deployment successful!');
+  // Commit and push the changes in the submodule
+  console.log('📦 Committing changes...');
+  process.chdir(outDir);
+  run('git add .');
+  
+  try {
+    run(`git commit -m "Deploy site: ${timestamp} UTC"`);
+    run('git push origin HEAD:main');
   } catch (error) {
-    console.error('❌ Deployment failed:', error);
-    process.exit(1);
+    console.log('No changes to commit');
   }
+
+  // Go back to main repository and update the submodule reference
+  process.chdir('..');
+  run('git add out');
+  try {
+    run(`git commit -m "chore: update site deployment (${timestamp} UTC)"`);
+    run('git push');
+  } catch (error) {
+    console.log('No need to update submodule reference');
+  }
+
+  console.log('✅ Deployment successful!');
 }
 
-// Run the deployment
 deploy().catch(console.error); 
